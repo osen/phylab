@@ -40,4 +40,6 @@ endif()
 add_executable(sample
   src/sample/main.cpp
 )
-target_link_libraries(sample ws2_32)
+if(WIN32)
+  target_link_libraries(sample ws2_32)
+endif()

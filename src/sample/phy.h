@@ -18,8 +18,15 @@
 #ifndef PHY_PHY_H
 #define PHY_PHY_H
 
-#include <winsock2.h>
-#include <ws2tcpip.h>
+#ifdef _WIN32
+  #include <winsock2.h>
+  #include <ws2tcpip.h>
+#else
+  #include <sys/socket.h>
+  #include <sys/types.h>
+  #include <unistd.h>
+  #include <netdb.h>
+#endif
 
 #include <memory>
 #include <iostream>
@@ -34,7 +41,16 @@
 #define PHY_CUBE 14
 #define PHY_SPHERE 19
 
-#pragma comment(lib, "Ws2_32.lib")
+#ifdef _MSC_VER
+  #pragma comment(lib, "Ws2_32.lib")
+#endif
+
+#ifdef _WIN32
+  #define MSG_NOSIGNAL 0
+#else
+  #define INVALID_SOCKET -1
+  #define SOCKET_ERROR -1
+#endif
 
 namespace phy
 {
@@ -78,8 +94,12 @@ private:
     bool initialized;
     bool connected;
     int id;
+#ifdef _WIN32
     WSADATA wsaData;
     SOCKET socket;
+#else
+    int socket;
+#endif
   };
 
   struct Impl
@@ -87,13 +107,7 @@ private:
     Impl()
     {
       initialize(connection);
-      //std::cout << "Impl" << std::endl;
       //std::cout << "Id: " << connection.id << std::endl;
-    }
-
-    ~Impl()
-    {
-      //std::cout << "~Impl" << std::endl;
     }
 
     void setPosition(float x, float y, float z)
@@ -156,13 +170,17 @@ private:
       sc.initialized = true;
 
       //std::cout << "initialize" << std::endl;
-      int res = WSAStartup(MAKEWORD(2,2), &sc.wsaData);
+      int res = 0;
+
+#ifdef _WIN32
+      res = WSAStartup(MAKEWORD(2,2), &sc.wsaData);
       // TODO: WSACleanup();
 
       if(res != 0)
       {
         return;
       }
+#endif
 
       addrinfo hints = {0};
       hints.ai_family = AF_UNSPEC;
@@ -194,7 +212,11 @@ private:
 
         if(res == SOCKET_ERROR)
         {
+#ifdef _WIN32
           closesocket(sc.socket);
+#else
+          close(sc.socket);
+#endif
           sc.socket = INVALID_SOCKET;
 
           continue;
@@ -222,7 +244,8 @@ private:
 
       while(message.length() > 0)
       {
-        int res = ::send(connection.socket, message.c_str(), message.length(), 0);
+        int res = ::send(connection.socket, message.c_str(),
+          message.length(), MSG_NOSIGNAL);
 
         if(res == SOCKET_ERROR)
         {
@@ -244,8 +267,20 @@ private:
   std::shared_ptr<Impl> impl;
 };
 
+template <typename T>
+void wait(int mil)
+{
+#ifdef _WIN32
+  Sleep(mil);
+#else
+  // TODO: This isn't strictly SUSv2 / POSIX.1-2001 compliant
+  usleep(mil * 1000);
+#endif
+}
+
 }
 
 typedef phy::Object<unsigned char> Object;
+#define wait phy::wait<unsigned char>
 
 #endif

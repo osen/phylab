@@ -1,6 +1,5 @@
 #include "phy.h"
-
-#include <windows.h>
+#include "phy.h"
 
 #include <cmath>
 
@@ -24,7 +23,7 @@ int main()
     b.setRotation(0, s * 45, 0);
     b.setScale(2, 2 + s * 1, 2);
 
-    Sleep(10);
+    wait(10);
   }
 
   return 0;
