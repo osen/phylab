@@ -20,7 +20,7 @@
  * Compile time flag to enable the tool. If disabled then dummy operations are
  * used instead. Facilities such as vector(T) are always available.
  *****************************************************************************/
-#define STENT_ENABLE
+//#define STENT_ENABLE
 
 #define STENT_BLOCKSIZE 1024
 

@@ -1,5 +1,4 @@
 #include "phy.h"
-#include "phy.h"
 
 #include <cmath>
 
@@ -8,7 +7,6 @@ int main()
   Object a;
   Object b;
   float v = 0;
-  Object c;
 
   a.setPosition(0, 1.5f, 0);
   a.setScale(3, 3, 3);

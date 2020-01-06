@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 
-#define VERSION "1.0.3"
+#define VERSION "1.0.4"
 #define MOUSE_SENSITIVITY 0.5f;
 #define MOVEMENT_SPEED 10;
 #define LISTEN_PORT 1987
@@ -449,7 +449,7 @@ ref(State) StateCreate()
 
   _(rtn).ground = allocate(Object);
   _(_(rtn).ground).state = rtn;
-  _(_(rtn).ground).color = ReVec4Rgba(0.5f, 0.5f, 0.5f, 0.75f);
+  _(_(rtn).ground).color = ReVec4Rgba(0.3f, 1.0f, 0.3f, 0.75f);
   _(_(rtn).ground).type = RE_PRIMITIVE_SQUARE;
   _(_(rtn).ground).scale = ReVec3Xyz(50, 50, 50);
   _(_(rtn).ground).rotation.x = -90;
